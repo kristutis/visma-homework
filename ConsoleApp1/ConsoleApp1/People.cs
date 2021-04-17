@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace ConsoleApp1
 {
@@ -99,6 +100,41 @@ namespace ConsoleApp1
                 }
             }
             return false;
+        }
+
+        public void Sort(string order)
+        {
+            if (order == "ascending")
+            {
+                var clients = from client in Clients
+                         orderby client.Name ascending
+                         select client;
+                Clients = clients.ToList();
+            }
+            else
+            {
+                var clients = from client in Clients
+                              orderby client.Name descending
+                              select client;
+                Clients = clients.ToList();
+            }
+        }
+
+        public override string ToString()
+        {
+            if (Clients.Count == 0)
+            {
+                return "No books are taken from the library.";
+            }
+            string msg = "Taken books:\n";
+            foreach (var client in Clients)
+            {
+                foreach (var book in client.RecievedBooks)
+                {
+                    msg += String.Format("Name: {0} | Surname: {1} | ReturnDate: {2} | Book: {3}\n", client.Name, client.Surname, book.Value, book.Key.ToString());
+                }
+            }
+            return msg;
         }
     }
 }

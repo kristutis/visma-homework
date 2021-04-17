@@ -192,24 +192,17 @@ namespace ConsoleApp1
             string filterField = parts[1];
             if (filterField.ToLower() == "available")
             {
-                List<Book> availableBooks = new List<Book>();
-                if (parts.Length == 3)
-                {
-                    availableBooks = libraryBooks.GetFilteredData(filterField.ToLower(), null, parts[2]);
-                } else
-                {
-                    availableBooks = libraryBooks.GetFilteredData(filterField.ToLower());
-                }                
+                List<Book> availableBooks = parts.Length == 3 ? libraryBooks.GetFilteredData(filterField.ToLower(), null, parts[2]) : libraryBooks.GetFilteredData(filterField.ToLower());             
                 Console.WriteLine(new Books(availableBooks).ToString());
                 return;
             }
             if (filterField.ToLower() == "taken")
             {
-                List<Book> takenBooks = libraryBooks.GetFilteredData(filterField.ToLower(), null, parts.Length == 3 ? parts[2] : null, clients.Clients);
-                if (takenBooks.Count != 0)
+                if (parts.Length == 3)
                 {
-                    Console.WriteLine(new Books(takenBooks).ToString());
+                    clients.Sort(parts[2]);
                 }
+                Console.WriteLine(clients.ToString());
                 return;
             }
             if (parts.Length < 3)
