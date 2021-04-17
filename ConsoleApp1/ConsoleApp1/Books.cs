@@ -43,7 +43,7 @@ namespace ConsoleApp1
             return base.ToString();
         }
 
-        public List<Book> GetFilteredData(string field, string option, string order = null)
+        public List<Book> GetFilteredData(string field, string option, string order = null, List<Person> people = null)
         {
             List<Book> books = new List<Book>();
             switch (field)
@@ -73,14 +73,37 @@ namespace ConsoleApp1
                     books = BooksList.Where(book => book.Isbn.ToLower().Contains(option)).ToList();
                     break;
                 case "taken":
-                    //ss
+                    if (people == null)
+                    {
+                        Console.WriteLine("Error no passed people to filter method");
+                        return new List<Book>();
+                    }
+                    if (people.Count == 0)
+                    {
+                        Console.WriteLine("All books are available!");
+                        return new List<Book>();
+                    }
+                    books = GetTakenBooks(people);
                     break;
                 case "available":
-                    //ss
+                    books = BooksList;
                     break;
                 default:
                     Console.WriteLine("Unknown field");
                     return new List<Book>();
+            }
+
+            List<Book> GetTakenBooks(List<Person> people)
+            {
+                List<Book> takenBooks = new List<Book>();
+                foreach (var person in people)
+                {
+                    foreach (var book in person.RecievedBooks.Keys)
+                    {
+                        takenBooks.Add(book);
+                    }
+                }                
+                return takenBooks;
             }
 
             if (order != null)

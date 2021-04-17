@@ -10,7 +10,7 @@ namespace ConsoleApp1
     class Program
     {
         const string JSON_ARRAY_NAME = "books";
-        static readonly string[] FIELDS = { "title", "author", "subtitle", "website", "published", "isbn" };
+        static readonly string[] FIELDS = { "title", "author", "category", "language", "published", "isbn" };
         const string INPUT_FILE_PATH = @"../../../../../books.json";
         const string DELETE_COMMAND = "delete";
         const string LIST_COMMAND = "list";
@@ -23,7 +23,7 @@ namespace ConsoleApp1
                                     Available commands:
                                     To list all books: list [author <option> | category <option>  | language <option> | isbn <option> |
                                                              | name <option> | date <option> | taken | available] [ascending | descending]
-                                    To add a new book: add <book_name> <author> <category> <language> <publication_date> <isbn>
+                                    To add a new book: add <isbn> <book_name> <author> <category> <language> <publication_date> 
                                     To take a book from the library: take <name> <surname> <return_date> <book_isbn>
                                     To return a book back to the library: return <name> <surname> <book_isbn>
                                     To delete a book: delete <book_isbn>";
@@ -82,12 +82,13 @@ namespace ConsoleApp1
                 return;
             }
             DateTime date = new DateTime();
-            if (!DateTime.TryParse(parts[5], out date))
+            if (!DateTime.TryParse(parts[6], out date))
             {
                 Console.WriteLine("Wrong date format");
                 return;
             }
-            Book newBook = new Book(parts[1], parts[2], parts[3], parts[4], date, parts[6]);
+            //<isbn> <book_name> <author> <category> <language> <publication_date> 
+            Book newBook = new Book(parts[2], parts[3], parts[4], parts[5], date, parts[1]);
             libraryBooks.AddBook(newBook);
             Console.WriteLine(newBook.ToString() + " added successfuly!");
             UpdateFile();
@@ -95,7 +96,8 @@ namespace ConsoleApp1
 
         static void UpdateFile()
         {
-            //upload()
+            string jsonString = JsonSerializer.Serialize(new { books = libraryBooks.BooksList.ToArray() });
+            File.WriteAllText(INPUT_FILE_PATH, jsonString);
             ReadDataFromFile();
         }
 
@@ -112,9 +114,14 @@ namespace ConsoleApp1
             string filterField = parts[1];
             string filterOption = parts[2];
             string order = parts.Length == 4 ? parts[3].ToLower() : null;
+            if (filterField.ToLower() == "taken" && people.Count != 0)
+            {
+                List<Book> takenBooks = libraryBooks.GetFilteredData(filterField.ToLower(), filterOption.ToLower(), order, people);
+                Console.WriteLine(new Books(takenBooks).ToString());
+                return;
+            }
             List<Book> filteredData = libraryBooks.GetFilteredData(filterField.ToLower(), filterOption.ToLower(), order);
-            Books filteredBooks = new Books(filteredData);
-            Console.WriteLine(filteredBooks.ToString());
+            Console.WriteLine(new Books(filteredData).ToString());
         }
 
         static void ReadDataFromFile()

@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace ConsoleApp1
 {
     public class Book : IComparable<Book>, IEquatable<Book>
     {
+        [JsonPropertyName("title")]
         public string Name { get; set; }
+        [JsonPropertyName("author")]
         public string Author { get; set; }
+        [JsonPropertyName("category")]
         public string Category { get; set; }
+        [JsonPropertyName("language")]
         public string Language { get; set; }
+        [JsonPropertyName("published")]
         public DateTime PublicationDate { get; set; }
+        [JsonPropertyName("isbn")]
         public string Isbn { get; set; }
 
         public Book()
@@ -92,7 +99,7 @@ namespace ConsoleApp1
         {
             if (Name != null && Author != null && Category != null && Language != null && PublicationDate != null && Isbn != null)
             {
-                return String.Format("Book({0}; {1}; {2}; {3}; {4}; {5})", Isbn, Name, Author, Category, Language, PublicationDate.ToString("dd/MM/yyyy"));
+                return String.Format("{0,-14} | {1,-42} | {2,-20} | {3,-20} | {4,-3} | {5,-15}", Isbn, Name, Author, Category, Language, PublicationDate.ToString("dd/MM/yyyy"));
             }
             return base.ToString();
         }

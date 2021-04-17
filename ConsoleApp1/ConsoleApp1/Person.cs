@@ -8,7 +8,7 @@ namespace ConsoleApp1
     {
         public string Name { get; set; }
         public string Surname { get; set; }
-        Dictionary<Book, DateTime> RecievedBooks { get; set; }
+        public Dictionary<Book, DateTime> RecievedBooks { get; set; }
 
         public Person()
         {
