@@ -36,11 +36,19 @@ namespace ConsoleApp1
 
         public static bool operator ==(Book book1, Book book2)
         {
+            if (object.ReferenceEquals(book1, null))
+            {
+                return object.ReferenceEquals(book2, null);
+            }
             return book1.Equals(book2);
         }
 
         public static bool operator !=(Book book1, Book book2)
         {
+            if (object.ReferenceEquals(book1, null) || object.ReferenceEquals(book2, null))
+            {
+                return !(book1==book2);
+            }
             return !book1.Equals(book2);
         }
 
@@ -74,6 +82,10 @@ namespace ConsoleApp1
 
         public bool Equals(Book other)
         {
+            if (object.ReferenceEquals(other, null))
+            {
+                return object.ReferenceEquals(this, null);
+            }
             return Name.Equals(other.Name) && Author.Equals(other.Author) && Category.Equals(other.Category)
                     && Language.Equals(other.Language) && PublicationDate.Equals(other.PublicationDate) && Isbn.Equals(other.Isbn);
         }

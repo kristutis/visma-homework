@@ -28,7 +28,8 @@ namespace ConsoleApp1
                                     * To take a book from the library: take <name> <surname> <return_date> <book_isbn>
                                     * To return a book back to the library: return <name> <surname> <book_isbn>
                                     * To delete a book: delete <book_isbn>
-                                    * To list commands: help";
+                                    * To list commands: help
+                                    * To exit program: quit";
         const string GOODBYE_MESSAGE = "Thank you for using the application. Have a good day.";
 
         static Books libraryBooks;
@@ -97,7 +98,7 @@ namespace ConsoleApp1
                 return;
             }
             var book = clients.ReturnBook(name, surname, isbn);
-            if (book != new Book())
+            if (book != null)
             {
                 libraryBooks.AddBook(book);
             }
@@ -112,8 +113,11 @@ namespace ConsoleApp1
                 Console.WriteLine("delete <book_isbn>");
                 return;
             }
+            var temp = libraryBooks;
+            ReadDataFromFile();
             libraryBooks.Delete(parts[1]);
             UpdateFile();
+            libraryBooks = temp;
         }
 
         static void ProcessTake(string[] parts)
@@ -166,17 +170,19 @@ namespace ConsoleApp1
                 Console.WriteLine("Wrong date format");
                 return;
             }
+            var temp = libraryBooks;
+            ReadDataFromFile();
             Book newBook = new Book(parts[2], parts[3], parts[4], parts[5], date, parts[1]);
             libraryBooks.AddBook(newBook);
             Console.WriteLine(newBook.ToString() + "\nAdded successfuly!");
             UpdateFile();
+            libraryBooks = temp;
         }
 
         static void UpdateFile()
         {
             string jsonString = JsonSerializer.Serialize(new { books = libraryBooks.BooksList.ToArray() });
             File.WriteAllText(INPUT_FILE_PATH, jsonString);
-            ReadDataFromFile();
         }
 
         static void ProcessList(string[] parts)

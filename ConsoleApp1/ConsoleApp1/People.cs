@@ -50,8 +50,7 @@ namespace ConsoleApp1
                 if (book.Key.Isbn == isbn)
                 {
                     DateTime returnDate = book.Value;
-                    int monthsApart = 12 * (DateTime.Now.Year - returnDate.Year) + DateTime.Now.Month - returnDate.Month;
-                    if (monthsApart > 2)
+                    if (DateTime.Now > returnDate)
                     {
                         Console.WriteLine("Sorry I'm late. I didn't want to come");
                     }
@@ -61,7 +60,7 @@ namespace ConsoleApp1
                 }
             }
             Console.WriteLine(String.Format("Client {0} {1} does not have a book with isbn {2}!", name, surname, isbn));
-            return new Book();
+            return null;
         }
 
         public bool TakeBook(string name, string surname, Book book, DateTime returnDate)
