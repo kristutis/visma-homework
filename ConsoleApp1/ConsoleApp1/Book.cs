@@ -75,7 +75,7 @@ namespace ConsoleApp1
         public bool Equals(Book other)
         {
             return Name.Equals(other.Name) && Author.Equals(other.Author) && Category.Equals(other.Category)
-                && Language.Equals(other.Language) && PublicationDate.Equals(other.PublicationDate) && Isbn.Equals(other.Isbn);
+                    && Language.Equals(other.Language) && PublicationDate.Equals(other.PublicationDate) && Isbn.Equals(other.Isbn);
         }
 
         public int CompareTo(Book other)

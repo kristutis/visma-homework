@@ -18,23 +18,25 @@ namespace ConsoleApp1
         const string TAKE_COMMAND = "take";
         const string RETURN_COMMAND = "return";
         const string QUIT_COMMAND = "quit";
+        const string HELP_COMMAND = "help";
         const string HELLO_MESSAGE = @"Welcome to the library application!
                                     In this application you can list, add, take, return or delete a book from a library.
                                     Available commands:
-                                    To list all books: list [author <option> | category <option>  | language <option> | isbn <option> |
+                                    * To list all books: list [author <option> | category <option>  | language <option> | isbn <option> |
                                                              | name <option> | date <option> | taken | available] [ascending | descending]
-                                    To add a new book: add <isbn> <book_name> <author> <category> <language> <publication_date> 
-                                    To take a book from the library: take <name> <surname> <return_date> <book_isbn>
-                                    To return a book back to the library: return <name> <surname> <book_isbn>
-                                    To delete a book: delete <book_isbn>";
+                                    * To add a new book: add <isbn> <book_name> <author> <category> <language> <publication_date> 
+                                    * To take a book from the library: take <name> <surname> <return_date> <book_isbn>
+                                    * To return a book back to the library: return <name> <surname> <book_isbn>
+                                    * To delete a book: delete <book_isbn>
+                                    * To list commands: help";
         const string GOODBYE_MESSAGE = "Thank you for using the application. Have a good day.";
 
         static Books libraryBooks;
-        static List<Person> people;
+        static People clients;
         static void Main(string[] args)
         {
             Console.WriteLine(HELLO_MESSAGE.Replace("  ", ""));
-            people = new List<Person>();
+            clients = new People();
             ReadDataFromFile();            
             string command = "";
             while (command.ToLower() != QUIT_COMMAND)
@@ -63,15 +65,55 @@ namespace ConsoleApp1
                     ProcessTake(parts);
                     break;
                 case RETURN_COMMAND:
-                    //ProcessReturn(parts);
+                    ProcessReturn(parts);
                     break;
                 case DELETE_COMMAND:
-                    //ProcessDelete(parts):
+                    ProcessDelete(parts);
+                    break;
+                case HELP_COMMAND:
+                    Console.WriteLine(HELLO_MESSAGE.Replace("  ", ""));
                     break;
                 default:
                     Console.WriteLine("Incorrect command");
                     break;
             }
+        }
+
+        static void ProcessReturn(string[] parts)
+        {
+            if (parts.Length != 4)
+            {
+                Console.WriteLine("Incorrect return input");
+                Console.WriteLine("Command:");
+                Console.WriteLine("return <name> <surname> <book_isbn>");
+                return;
+            }
+            string name = parts[1];
+            string surname = parts[2];
+            string isbn = parts[3];
+            if (!clients.ClientExists(name, surname))
+            {
+                Console.WriteLine(String.Format("Client {0} {1} does not exist!", name, surname));
+                return;
+            }
+            var book = clients.ReturnBook(name, surname, isbn);
+            if (book != new Book())
+            {
+                libraryBooks.AddBook(book);
+            }
+        }
+
+        static void ProcessDelete(string[] parts)
+        {
+            if (parts.Length != 2)
+            {
+                Console.WriteLine("Incorrect delete input");
+                Console.WriteLine("Command:");
+                Console.WriteLine("delete <book_isbn>");
+                return;
+            }
+            libraryBooks.Delete(parts[1]);
+            UpdateFile();
         }
 
         static void ProcessTake(string[] parts)
@@ -82,6 +124,24 @@ namespace ConsoleApp1
                 Console.WriteLine("Command:");
                 Console.WriteLine("take <name> <surname> <return_date> <book_isbn>");
                 return;
+            }
+            if (!libraryBooks.Exists(parts[4]))
+            {
+                Console.WriteLine("book with isbn " + parts[4] + " does not exist!");
+                return;
+            }
+            string name = parts[1];
+            string surname = parts[2];
+            DateTime date = new DateTime();
+            if (!DateTime.TryParse(parts[3], out date))
+            {
+                Console.WriteLine("Wrong date format");
+                return;
+            }
+            string isbn = parts[4];
+            if (clients.TakeBook(name, surname, libraryBooks.GetBook(isbn), date))
+            {
+                libraryBooks.RemoveBook(libraryBooks.GetBook(isbn));
             }
         }
 
@@ -106,10 +166,9 @@ namespace ConsoleApp1
                 Console.WriteLine("Wrong date format");
                 return;
             }
-            //<isbn> <book_name> <author> <category> <language> <publication_date> 
             Book newBook = new Book(parts[2], parts[3], parts[4], parts[5], date, parts[1]);
             libraryBooks.AddBook(newBook);
-            Console.WriteLine(newBook.ToString() + " added successfuly!");
+            Console.WriteLine(newBook.ToString() + "\nAdded successfuly!");
             UpdateFile();
         }
 
@@ -124,23 +183,44 @@ namespace ConsoleApp1
         {
             if (parts.Length == 1)
             {
+                var temp = libraryBooks;
+                ReadDataFromFile();
                 Console.WriteLine(libraryBooks.ToString());
+                libraryBooks = temp;
                 return;
-            } else if (parts.Length < 3) {
+            }
+            string filterField = parts[1];
+            if (filterField.ToLower() == "available")
+            {
+                List<Book> availableBooks = new List<Book>();
+                if (parts.Length == 3)
+                {
+                    availableBooks = libraryBooks.GetFilteredData(filterField.ToLower(), null, parts[2]);
+                } else
+                {
+                    availableBooks = libraryBooks.GetFilteredData(filterField.ToLower());
+                }                
+                Console.WriteLine(new Books(availableBooks).ToString());
+                return;
+            }
+            if (filterField.ToLower() == "taken")
+            {
+                List<Book> takenBooks = libraryBooks.GetFilteredData(filterField.ToLower(), null, parts.Length == 3 ? parts[2] : null, clients.Clients);
+                if (takenBooks.Count != 0)
+                {
+                    Console.WriteLine(new Books(takenBooks).ToString());
+                }
+                return;
+            }
+            if (parts.Length < 3)
+            {
                 Console.WriteLine("Not enough arguments");
                 Console.WriteLine("Command:");
                 Console.WriteLine("list [author <option> | category <option>  | language <option> | isbn <option> | name<option> | date<option> | taken | available] [ascending | descending]");
                 return;
             }
-            string filterField = parts[1];
             string filterOption = parts[2];
-            string order = parts.Length == 4 ? parts[3].ToLower() : null;
-            if (filterField.ToLower() == "taken" && people.Count != 0)
-            {
-                List<Book> takenBooks = libraryBooks.GetFilteredData(filterField.ToLower(), filterOption.ToLower(), order, people);
-                Console.WriteLine(new Books(takenBooks).ToString());
-                return;
-            }
+            string order = parts.Length == 4 ? parts[3].ToLower() : null;            
             List<Book> filteredData = libraryBooks.GetFilteredData(filterField.ToLower(), filterOption.ToLower(), order);
             Console.WriteLine(new Books(filteredData).ToString());
         }

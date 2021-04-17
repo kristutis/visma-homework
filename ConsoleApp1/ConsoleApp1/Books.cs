@@ -7,7 +7,7 @@ namespace ConsoleApp1
 {
     public class Books
     {
-        public List<Book> BooksList { get; set; }
+        public List<Book> BooksList { get; private set; }
 
         public Books()
         {
@@ -29,6 +29,18 @@ namespace ConsoleApp1
             BooksList.Remove(book);
         }
 
+        public Book GetBook(string isbn)
+        {
+            foreach (var book in BooksList)
+            {
+                if (book.Isbn == isbn)
+                {
+                    return book;
+                }
+            }
+            return null;
+        }
+
         public override string ToString()
         {
             if (BooksList.Count != 0)
@@ -43,6 +55,20 @@ namespace ConsoleApp1
             return base.ToString();
         }
 
+        public void Delete(string isbn)
+        {
+            foreach (var book in BooksList)
+            {
+                if (book.Isbn == isbn)
+                {
+                    BooksList.Remove(book);
+                    Console.WriteLine(book.ToString() + "\nRemoved sucessfully!");
+                    return;
+                }
+            }
+            Console.WriteLine("Book with isbn " + isbn + " does not exist!");
+        }
+
         public bool Exists(string isbn)
         {
             foreach (var book in BooksList)
@@ -55,7 +81,7 @@ namespace ConsoleApp1
             return false;
         }
 
-        public List<Book> GetFilteredData(string field, string option, string order = null, List<Person> people = null)
+        public List<Book> GetFilteredData(string field, string option = null, string order = null, List<Person> people = null)
         {
             List<Book> books = new List<Book>();
             switch (field)
