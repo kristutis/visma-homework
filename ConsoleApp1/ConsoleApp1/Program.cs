@@ -136,7 +136,7 @@ namespace ConsoleApp1
             {
                 JsonElement root = jsonDocument.RootElement;
                 JsonElement booksElement = root.GetProperty(JSON_ARRAY_NAME);
-                foreach(JsonElement jsonBook in booksElement.EnumerateArray())
+                foreach (JsonElement jsonBook in booksElement.EnumerateArray())
                 {
                     Book book = new Book();
                     JsonElement bookProperty = new JsonElement();
@@ -153,7 +153,7 @@ namespace ConsoleApp1
                     }
                     book.PublicationDate = publicationDate;
                     libraryBooks.AddBook(book);
-                }                
+                }
             }
         }
     }
