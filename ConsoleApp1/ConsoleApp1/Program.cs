@@ -60,7 +60,7 @@ namespace ConsoleApp1
                     ProcessAdd(parts);
                     break;
                 case TAKE_COMMAND:
-                    //ProcessTake(parts);
+                    ProcessTake(parts);
                     break;
                 case RETURN_COMMAND:
                     //ProcessReturn(parts);
@@ -74,13 +74,32 @@ namespace ConsoleApp1
             }
         }
 
+        static void ProcessTake(string[] parts)
+        {
+            if (parts.Length != 5)
+            {
+                Console.WriteLine("Incorrect take input");
+                Console.WriteLine("Command:");
+                Console.WriteLine("take <name> <surname> <return_date> <book_isbn>");
+                return;
+            }
+        }
+
         static void ProcessAdd(string[] parts)
         {
             if (parts.Length != 7)
             {
                 Console.WriteLine("incorrect add input");
+                Console.WriteLine("Command:");
+                Console.WriteLine("add <isbn> <book_name> <author> <category> <language> <publication_date>");
                 return;
             }
+            if (libraryBooks.Exists(parts[1]))
+            {
+                Console.WriteLine("book with isbn " + parts[1] + " already exists!");
+                return;
+            }
+
             DateTime date = new DateTime();
             if (!DateTime.TryParse(parts[6], out date))
             {
@@ -109,6 +128,8 @@ namespace ConsoleApp1
                 return;
             } else if (parts.Length < 3) {
                 Console.WriteLine("Not enough arguments");
+                Console.WriteLine("Command:");
+                Console.WriteLine("list [author <option> | category <option>  | language <option> | isbn <option> | name<option> | date<option> | taken | available] [ascending | descending]");
                 return;
             }
             string filterField = parts[1];

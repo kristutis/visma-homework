@@ -43,6 +43,18 @@ namespace ConsoleApp1
             return base.ToString();
         }
 
+        public bool Exists(string isbn)
+        {
+            foreach (var book in BooksList)
+            {
+                if (book.Isbn == isbn)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public List<Book> GetFilteredData(string field, string option, string order = null, List<Person> people = null)
         {
             List<Book> books = new List<Book>();
@@ -91,20 +103,7 @@ namespace ConsoleApp1
                 default:
                     Console.WriteLine("Unknown field");
                     return new List<Book>();
-            }
-
-            List<Book> GetTakenBooks(List<Person> people)
-            {
-                List<Book> takenBooks = new List<Book>();
-                foreach (var person in people)
-                {
-                    foreach (var book in person.RecievedBooks.Keys)
-                    {
-                        takenBooks.Add(book);
-                    }
-                }                
-                return takenBooks;
-            }
+            }            
 
             if (order != null)
             {
@@ -124,6 +123,18 @@ namespace ConsoleApp1
                 }
             }
             return books;
+        }
+        List<Book> GetTakenBooks(List<Person> people)
+        {
+            List<Book> takenBooks = new List<Book>();
+            foreach (var person in people)
+            {
+                foreach (var book in person.RecievedBooks.Keys)
+                {
+                    takenBooks.Add(book);
+                }
+            }
+            return takenBooks;
         }
     }
 }
