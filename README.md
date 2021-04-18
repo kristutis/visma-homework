@@ -1,5 +1,4 @@
 # visma-homework
-----------------------------
 ### Welcome to my implementation of Visma homework task - library application.
 To open the solution please navigate to ./ConsoleApp1/ and open up ConsoleApp1.sln
 To review the source code please navigate to ./ConsoleApp1/ConsoleApp1/
