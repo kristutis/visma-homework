@@ -116,10 +116,5 @@ namespace ConsoleApp1
         {
             return Equals(obj as Book);
         }
-
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
