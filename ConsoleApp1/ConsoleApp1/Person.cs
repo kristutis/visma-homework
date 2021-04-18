@@ -36,6 +36,7 @@ namespace ConsoleApp1
                 {
                     msg += String.Format("{0,-10} | {1,-10} | {2:-10} | {3,-150}", Name, Surname, book.Key, book.Value.ToString());
                 }
+                return msg;
             }
             return base.ToString();
         }

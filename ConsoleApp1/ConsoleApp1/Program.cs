@@ -83,7 +83,7 @@ namespace ConsoleApp1
 
         static void ProcessReturn(string[] parts)
         {
-            if (parts.Length != 4)
+            if (4 != parts.Length)
             {
                 Console.WriteLine("Incorrect return input");
                 Console.WriteLine("Command:");
