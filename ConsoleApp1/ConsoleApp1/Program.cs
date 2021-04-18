@@ -76,6 +76,7 @@ namespace ConsoleApp1
                     break;
                 default:
                     Console.WriteLine("Incorrect command");
+                    Console.WriteLine("Available comands: {0}, {1}, {2}, {3}, {4}, {5}, {6}", LIST_COMMAND, ADD_COMMAND, TAKE_COMMAND, RETURN_COMMAND, DELETE_COMMAND, HELP_COMMAND, QUIT_COMMAND);
                     break;
             }
         }
@@ -113,11 +114,8 @@ namespace ConsoleApp1
                 Console.WriteLine("delete <book_isbn>");
                 return;
             }
-            var temp = libraryBooks;
-            ReadDataFromFile();
             libraryBooks.Delete(parts[1]);
             UpdateFile();
-            libraryBooks = temp;
         }
 
         static void ProcessTake(string[] parts)
@@ -143,10 +141,7 @@ namespace ConsoleApp1
                 return;
             }
             string isbn = parts[4];
-            if (clients.TakeBook(name, surname, libraryBooks.GetBook(isbn), date))
-            {
-                libraryBooks.RemoveBook(libraryBooks.GetBook(isbn));
-            }
+            clients.TakeBook(name, surname, libraryBooks.GetBook(isbn), date);
         }
 
         static void ProcessAdd(string[] parts)
@@ -170,13 +165,10 @@ namespace ConsoleApp1
                 Console.WriteLine("Wrong date format");
                 return;
             }
-            var temp = libraryBooks;
-            ReadDataFromFile();
             Book newBook = new Book(parts[2], parts[3], parts[4], parts[5], date, parts[1]);
             libraryBooks.AddBook(newBook);
             Console.WriteLine(newBook.ToString() + "\nAdded successfuly!");
             UpdateFile();
-            libraryBooks = temp;
         }
 
         static void UpdateFile()
@@ -189,16 +181,32 @@ namespace ConsoleApp1
         {
             if (parts.Length == 1)
             {
-                var temp = libraryBooks;
-                ReadDataFromFile();
                 Console.WriteLine(libraryBooks.ToString());
-                libraryBooks = temp;
                 return;
             }
             string filterField = parts[1];
+            if (filterField == "ascending" || filterField == "descending")
+            {
+                if (filterField == "ascending")
+                {
+                    var bs = from book in libraryBooks.BooksList
+                             orderby book ascending
+                             select book;
+                    Console.WriteLine(new Books(bs.ToList()).ToString());
+                    return;
+                }
+                else
+                {
+                    var bs = from book in libraryBooks.BooksList
+                             orderby book descending
+                             select book;
+                    Console.WriteLine(new Books(bs.ToList()).ToString());
+                    return;
+                }
+            }
             if (filterField.ToLower() == "available")
             {
-                List<Book> availableBooks = parts.Length == 3 ? libraryBooks.GetFilteredData(filterField.ToLower(), null, parts[2]) : libraryBooks.GetFilteredData(filterField.ToLower());             
+                var availableBooks = parts.Length == 3 ? GetAvailableList(parts[2]) : GetAvailableList();
                 Console.WriteLine(new Books(availableBooks).ToString());
                 return;
             }
@@ -222,6 +230,39 @@ namespace ConsoleApp1
             string order = parts.Length == 4 ? parts[3].ToLower() : null;            
             List<Book> filteredData = libraryBooks.GetFilteredData(filterField.ToLower(), filterOption.ToLower(), order);
             Console.WriteLine(new Books(filteredData).ToString());
+        }
+
+        static List<Book> GetAvailableList(string order = null)
+        {
+            List<Book> takenBooks = clients.GetTakenBooks();
+            List<Book> availableBooks = new List<Book>();
+            foreach (var book in libraryBooks.BooksList)
+            {
+                if (!takenBooks.Contains(book))
+                {
+                    availableBooks.Add(book);
+                }
+            }
+
+            if (order != null)
+            {
+                if (order == "ascending")
+                {
+                    var bs = from book in availableBooks
+                             orderby book ascending
+                             select book;
+                    availableBooks = bs.ToList();
+                }
+                else
+                {
+                    var bs = from book in availableBooks
+                             orderby book descending
+                             select book;
+                    availableBooks = bs.ToList();
+                }
+            }
+
+            return availableBooks;
         }
 
         static void ReadDataFromFile()

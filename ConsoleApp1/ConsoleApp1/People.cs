@@ -119,6 +119,23 @@ namespace ConsoleApp1
             }
         }
 
+        public List<Book> GetTakenBooks()
+        {
+            List<Book> books = new List<Book>();
+            if (Clients.Count == 0)
+            {
+                return books;
+            }
+            foreach (var client in Clients)
+            {
+                foreach (var book in client.RecievedBooks)
+                {
+                    books.Add(book.Key);
+                }
+            }
+            return books;
+        }
+
         public override string ToString()
         {
             if (Clients.Count == 0)

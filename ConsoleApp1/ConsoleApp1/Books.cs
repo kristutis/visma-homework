@@ -24,11 +24,6 @@ namespace ConsoleApp1
             BooksList.Add(book);
         }
 
-        public void RemoveBook(Book book)
-        {
-            BooksList.Remove(book);
-        }
-
         public Book GetBook(string isbn)
         {
             foreach (var book in BooksList)
@@ -109,9 +104,6 @@ namespace ConsoleApp1
                     break;
                 case "isbn":
                     books = BooksList.Where(book => book.Isbn.ToLower().Contains(option)).ToList();
-                    break;
-                case "available":
-                    books = BooksList;
                     break;
                 default:
                     Console.WriteLine("Unknown field");
