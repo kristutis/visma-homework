@@ -22,7 +22,7 @@ namespace TestLibrary.UnitTest
         }
 
         [TestMethod]
-        public void CheckFilter_FilterByAuthor_ReturnFilteredData()
+        public void CheckFilterAscending_FilterByAuthor_ReturnFilteredData()
         {
             Book book1 = new Book("sample name1", "sample_author1", "cat", "en", DateTime.Today, "111");
             Book book2 = new Book("sample name2", "sample author2", "cat", "en", DateTime.Now, "222");
@@ -32,6 +32,31 @@ namespace TestLibrary.UnitTest
             List<Book> result = books.GetFilteredData("author", "sample_author", "ascending");
             Assert.AreEqual(result[0], book1);
             Assert.AreEqual(result[1], book4);
+        }
+
+        [TestMethod]
+        public void CheckFilterDescending_FilterByAuthor_ReturnFilteredData()
+        {
+            Book book1 = new Book("sample name1", "sample_author1", "cat", "en", DateTime.Today, "111");
+            Book book2 = new Book("sample name2", "sample author2", "cat", "en", DateTime.Now, "222");
+            Book book3 = new Book("sample_name3", "sample author3", "cat", "en", DateTime.Now, "333");
+            Book book4 = new Book("sample_name4", "sample_author4", "cat", "en", DateTime.Now, "444");
+            Books books = new Books(new List<Book>() { book1, book2, book3, book4 });
+            List<Book> result = books.GetFilteredData("author", "sample_author", "descending");
+            Assert.AreEqual(result[0], book4);
+            Assert.AreEqual(result[1], book1);
+        }
+
+        [TestMethod]
+        public void CheckFilterDescending_FilterByDate_ReturnFilteredData()
+        {
+            Book book1 = new Book("sample name1", "sample_author1", "cat", "en", DateTime.Today, "111");
+            Book book2 = new Book("sample name2", "sample author2", "cat", "en", DateTime.Now, "222");
+            Book book3 = new Book("sample_name3", "sample author3", "cat", "en", DateTime.Now, "333");
+            Book book4 = new Book("sample_name4", "sample_author4", "cat", "en", DateTime.Now, "444");
+            Books books = new Books(new List<Book>() { book1, book2, book3, book4 });
+            List<Book> result = books.GetFilteredData("date", DateTime.Today.ToString());
+            Assert.IsTrue(result.Count == 1);
         }
     }
 }

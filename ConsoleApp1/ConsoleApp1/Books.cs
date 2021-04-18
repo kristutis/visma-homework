@@ -100,7 +100,7 @@ namespace ConsoleApp1
                         Console.WriteLine("Wrong date format");
                         return new List<Book>();
                     }
-                    books = BooksList.Where(book => book.PublicationDate.CompareTo(date) > 0).ToList();
+                    books = BooksList.Where(book => book.PublicationDate.CompareTo(date) == 0).ToList();
                     break;
                 case "isbn":
                     books = BooksList.Where(book => book.Isbn.ToLower().Contains(option)).ToList();
