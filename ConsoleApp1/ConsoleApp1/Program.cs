@@ -98,11 +98,7 @@ namespace ConsoleApp1
                 Console.WriteLine(String.Format("Client {0} {1} does not exist!", name, surname));
                 return;
             }
-            var book = clients.ReturnBook(name, surname, isbn);
-            if (book != null)
-            {
-                libraryBooks.AddBook(book);
-            }
+            clients.ReturnBook(name, surname, isbn);
         }
 
         static void ProcessDelete(string[] parts)
@@ -130,6 +126,19 @@ namespace ConsoleApp1
             if (!libraryBooks.Exists(parts[4]))
             {
                 Console.WriteLine("book with isbn " + parts[4] + " does not exist!");
+                return;
+            }
+            bool found = false;
+            foreach (var book in GetAvailableList())
+            {
+                if (book.Isbn == parts[4])
+                {
+                    found = true;
+                }
+            }
+            if (!found)
+            {
+                Console.WriteLine("book with isbn " + parts[4] + " is already taken!");
                 return;
             }
             string name = parts[1];

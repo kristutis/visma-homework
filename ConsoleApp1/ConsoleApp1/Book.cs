@@ -45,11 +45,7 @@ namespace ConsoleApp1
 
         public static bool operator !=(Book book1, Book book2)
         {
-            if (object.ReferenceEquals(book1, null) || object.ReferenceEquals(book2, null))
-            {
-                return !(book1==book2);
-            }
-            return !book1.Equals(book2);
+            return !(book1 == book2);
         }
 
         public static bool operator <(Book book1, Book book2)
