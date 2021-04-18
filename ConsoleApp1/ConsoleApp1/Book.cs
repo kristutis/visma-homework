@@ -111,5 +111,15 @@ namespace ConsoleApp1
             }
             return base.ToString();
         }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Book);
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
